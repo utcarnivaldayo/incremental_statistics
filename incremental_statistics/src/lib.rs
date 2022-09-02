@@ -1,4 +1,4 @@
-mod incremental_statistics;
+pub mod incremental_statistics;
 
 #[cfg(test)]
 mod tests {
