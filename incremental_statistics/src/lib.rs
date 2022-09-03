@@ -43,6 +43,19 @@ mod tests {
     }
 
     #[test]
+    fn test_un_variance() {
+        let length = 5;
+        let mut a = incremental_statistics::IncrementalStatistics::new();
+        assert_eq!(a.un_variance(), 0.0f64);
+
+        for i in 1..=length {
+            a.add(i as f64);
+        }
+        // println!("un_variance: {}", a.un_variance());
+        assert!((a.un_variance() - 2.5).abs() < 1e-6);
+    }
+
+    #[test]
     fn test_standard_deviation() {
         let length = 5;
         let mut a = incremental_statistics::IncrementalStatistics::new();
@@ -56,6 +69,19 @@ mod tests {
     }
 
     #[test]
+    fn test_un_standard_deviation() {
+        let length = 5;
+        let mut a = incremental_statistics::IncrementalStatistics::new();
+        assert_eq!(a.un_standard_deviation(), 0.0f64);
+
+        for i in 1..=length {
+            a.add(i as f64);
+        }
+        // println!("un_standard_deviation: {}", a.un_standard_deviation());
+        assert!((a.un_standard_deviation() - 2.5f64.sqrt()).abs() < 1e-6);
+    }
+
+    #[test]
     fn test_add_bulk() {
         let arr: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0, 5.0];
         let mut a = incremental_statistics::IncrementalStatistics::new();
@@ -63,6 +89,38 @@ mod tests {
         assert_eq!(a.count(), arr.len());
         assert!((a.mean() - 3.0).abs() < 1e-6);
         assert!((a.standard_deviation() - 2.0f64.sqrt()).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_upper() {
+        let arr: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let mut a = incremental_statistics::IncrementalStatistics::new();
+        a.add_bulk(&arr);
+        assert!((a.upper() - (a.mean() + 2.0f64.sqrt())).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_lower() {
+        let arr: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let mut a = incremental_statistics::IncrementalStatistics::new();
+        a.add_bulk(&arr);
+        assert!((a.lower() - (a.mean() - 2.0f64.sqrt())).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_un_upper() {
+        let arr: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let mut a = incremental_statistics::IncrementalStatistics::new();
+        a.add_bulk(&arr);
+        assert!((a.un_upper() - (a.mean() + 2.5f64.sqrt())).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_un_lower() {
+        let arr: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let mut a = incremental_statistics::IncrementalStatistics::new();
+        a.add_bulk(&arr);
+        assert!((a.un_lower() - (a.mean() - 2.5f64.sqrt())).abs() < 1e-6);
     }
 
     #[test]
@@ -79,5 +137,19 @@ mod tests {
             assert!((incres[i].mean() - 3.0).abs() < 1e-6);
             assert!((incres[i].standard_deviation() - 2.0f64.sqrt()).abs() < 1e-6);
         }
+    }
+
+    #[test]
+    fn test_clear() {
+        let arr: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let mut a = incremental_statistics::IncrementalStatistics::new();
+        a.add_bulk(&arr);
+        a.clear();
+        assert_eq!(a.count(), 0);
+        assert!(a.mean() < 1e-6);
+        a.add_bulk(&arr);
+        assert_eq!(a.count(), arr.len());
+        assert!((a.mean() - 3.0).abs() < 1e-6);
+        assert!((a.standard_deviation() - 2.0f64.sqrt()).abs() < 1e-6);
     }
 }
