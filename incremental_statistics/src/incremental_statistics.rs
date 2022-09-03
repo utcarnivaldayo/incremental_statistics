@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub struct IncrementalStatistics {
     mean: f64,
     count: usize,
