@@ -4,6 +4,10 @@ pub struct IncrementalStatistics {
     m_2: f64,
     c_mean: f64,
     c_m_2: f64,
+    cached_standard_deviation: f64,
+    cached_un_standard_deviation: f64,
+    is_cached_standard_deviation: bool,
+    is_cached_un_standard_deviation: bool,
 }
 
 impl IncrementalStatistics {
@@ -14,6 +18,10 @@ impl IncrementalStatistics {
             m_2: 0.0,
             c_mean: 0.0,
             c_m_2: 0.0,
+            cached_standard_deviation: 0.0,
+            cached_un_standard_deviation: 0.0,
+            is_cached_standard_deviation: false,
+            is_cached_un_standard_deviation: false,
         }
     }
 
@@ -37,27 +45,38 @@ impl IncrementalStatistics {
         }
     }
 
-    pub fn standard_deviation(&self) -> f64 {
-        self.variance().sqrt()
+    pub fn standard_deviation(&mut self) -> f64 {
+        if self.is_cached_standard_deviation {
+            return self.cached_standard_deviation;
+        }
+
+        self.cached_standard_deviation = self.variance().sqrt();
+        self.is_cached_standard_deviation = true;
+        self.cached_standard_deviation
     }
 
-    pub fn un_standard_deviation(&self) -> f64 {
-        self.un_variance().sqrt()
+    pub fn un_standard_deviation(&mut self) -> f64 {
+        if self.is_cached_un_standard_deviation {
+            return self.cached_un_standard_deviation;
+        }
+        self.cached_un_standard_deviation = self.un_variance().sqrt();
+        self.is_cached_un_standard_deviation = true;
+        self.cached_un_standard_deviation
     }
 
-    pub fn upper(&self) -> f64 {
+    pub fn upper(&mut self) -> f64 {
         self.mean() + self.standard_deviation()
     }
 
-    pub fn lower(&self) -> f64 {
+    pub fn lower(&mut self) -> f64 {
         self.mean() - self.standard_deviation()
     }
 
-    pub fn un_upper(&self) -> f64 {
+    pub fn un_upper(&mut self) -> f64 {
         self.mean() + self.un_standard_deviation()
     }
 
-    pub fn un_lower(&self) -> f64 {
+    pub fn un_lower(&mut self) -> f64 {
         self.mean() - self.un_standard_deviation()
     }
 
@@ -71,6 +90,20 @@ impl IncrementalStatistics {
         IncrementalStatistics::kahan(delta / self.count as f64, &mut self.mean, &mut self.c_mean);
         let delta_2: f64 = data - self.mean;
         IncrementalStatistics::kahan(delta * delta_2, &mut self.m_2, &mut self.c_m_2);
+        self.is_cached_standard_deviation = false;
+        self.is_cached_un_standard_deviation = false;
+    }
+
+    pub fn clear(&mut self) {
+        self.mean = 0.0;
+        self.count = 0;
+        self.m_2 = 0.0;
+        self.c_mean = 0.0;
+        self.c_m_2 = 0.0;
+        self.cached_standard_deviation = 0.0;
+        self.cached_un_standard_deviation = 0.0;
+        self.is_cached_standard_deviation = false;
+        self.is_cached_un_standard_deviation = false;
     }
 
     fn kahan(data: f64, sum: &mut f64, c: &mut f64) {
