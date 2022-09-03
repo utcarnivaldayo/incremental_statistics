@@ -95,6 +95,12 @@ impl IncrementalStatistics {
         self.is_cached_un_standard_deviation = false;
     }
 
+    pub fn add_bulk(&mut self, data_bulk: &Vec<f64>) {
+        for i in data_bulk {
+            self.add(*i);
+        }
+    }
+
     pub fn clear(&mut self) {
         self.mean = 0.0;
         self.count = 0;
