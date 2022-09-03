@@ -45,6 +45,22 @@ impl IncrementalStatistics {
         self.un_variance().sqrt()
     }
 
+    pub fn upper(&self) -> f64 {
+        self.mean() + self.standard_deviation()
+    }
+
+    pub fn lower(&self) -> f64 {
+        self.mean() - self.standard_deviation()
+    }
+
+    pub fn un_upper(&self) -> f64 {
+        self.mean() + self.un_standard_deviation()
+    }
+
+    pub fn un_lower(&self) -> f64 {
+        self.mean() - self.un_standard_deviation()
+    }
+
     pub fn count(&self) -> usize {
         self.count
     }
