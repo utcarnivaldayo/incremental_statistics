@@ -30,6 +30,18 @@ mod tests {
     }
 
     #[test]
+    fn test_sum() {
+        let length = 5;
+        let mut a = incremental_statistics::IncrementalStatistics::new();
+        assert_eq!(a.sum(), 0.0f64);
+
+        for i in 1..=length {
+            a.add(i as f64);
+        }
+        assert!((a.sum() - 3.0 * length as f64).abs() < 1e-6);
+    }
+
+    #[test]
     fn test_variance() {
         let length = 5;
         let mut a = incremental_statistics::IncrementalStatistics::new();
