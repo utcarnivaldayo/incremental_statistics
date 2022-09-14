@@ -30,6 +30,10 @@ impl IncrementalStatistics {
         self.mean
     }
 
+    pub fn sum(&self) -> f64 {
+        self.mean * self.count as f64
+    }
+
     pub fn variance(&self) -> f64 {
         if self.count != 0usize {
             self.m_2 / self.count as f64
