@@ -54,7 +54,6 @@ impl IncrementalStatistics {
         if self.is_cached_standard_deviation {
             return self.cached_standard_deviation;
         }
-
         self.cached_standard_deviation = self.variance().sqrt();
         self.is_cached_standard_deviation = true;
         self.cached_standard_deviation
